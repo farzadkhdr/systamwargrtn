@@ -1160,7 +1160,7 @@
                                     <i class="fas fa-link"></i>
                                     لینکی API:
                                 </label>
-                                <input type="url" class="form-input" id="apiUrl" name="apiUrl" value="https://dawakrdn-4w4g-git-main-farzads-projects-912fa130.vercel.app" required>
+                                <input type="url" class="form-input" id="apiUrl" name="apiUrl" value="https://dawakrdn-4w4g-git-main-farzads-projects-912fa130.vercel.app/api/submit" required>
                                 <small style="display: block; margin-top: 0.5rem; color: #666;">لینکی بنەڕەتی APIەکە. دەتوانیت بیگۆڕیت.</small>
                             </div>
 
@@ -1258,7 +1258,7 @@
 
     <script>
         // API Configuration
-        let API_BASE_URL = 'https://dawakrdn-4w4g-git-main-farzads-projects-912fa130.vercel.app';
+        let API_BASE_URL = 'https://dawakrdn-4w4g-git-main-farzads-projects-912fa130.vercel.app/api/submit';
 
         // DOM Elements
         const adminThemeToggle = document.getElementById('adminThemeToggle');
@@ -1415,7 +1415,8 @@
         // API Status Check
         async function checkApiStatus() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/health`, {
+                // تاقیکردنەوەی API بۆ ناردنی داواکاری
+                const response = await fetch(`${API_BASE_URL}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json'
@@ -1475,51 +1476,96 @@
                 const apiIsOnline = await checkApiStatus();
                 
                 if (!apiIsOnline) {
-                    showNotification('API ناچالاکە. ناتواندرێت داتا بار بکرێت.', 'error');
+                    showNotification('API ناچالاکە. بەکارهێنانی داتای نموونەیی.', 'warning');
+                    // Load mock data for testing
+                    loadMockData();
                     return;
                 }
                 
-                // Load requests
-                const requestsResponse = await fetch(`${API_BASE_URL}/api/requests`);
-                const requestsResult = await requestsResponse.json();
+                showNotification('داواکاریەکان بار دەکرێن...', 'info', 2000);
                 
-                if (requestsResult.success) {
-                    currentRequests = requestsResult.data;
-                    updateDashboardStats(requestsResult.data);
-                    loadTodayRequests(requestsResult.data);
-                }
-                
-                // Load houses
-                const housesResponse = await fetch(`${API_BASE_URL}/api/houses`);
-                const housesResult = await housesResponse.json();
-                
-                if (housesResult.success) {
-                    currentHouses = housesResult.data;
-                    updateHousesStats(housesResult.data);
-                }
-                
-                // Load lands
-                const landsResponse = await fetch(`${API_BASE_URL}/api/lands`);
-                const landsResult = await landsResponse.json();
-                
-                if (landsResult.success) {
-                    currentLands = landsResult.data;
-                    updateLandsStats(landsResult.data);
-                }
-                
-                // Load advertisements
-                const adsResponse = await fetch(`${API_BASE_URL}/api/advertisements?status=active`);
-                const adsResult = await adsResponse.json();
-                
-                if (adsResult.success) {
-                    currentAds = adsResult.data;
-                    updateAdsStats(adsResult.data);
-                }
+                // داواکاریەکان لێرە دادەنرێن
+                // تێبینی: لینکی API تەنها بۆ ناردنە، بۆ وەرگرتن پێویستە لینکی تری بەکاربهێنیت
                 
             } catch (error) {
                 console.error('هەڵە لە بارکردنی داتا:', error);
                 showNotification('هەڵە لە بارکردنی داتا', 'error');
             }
+        }
+
+        // Load Mock Data for testing
+        function loadMockData() {
+            // Mock data for testing
+            const mockRequests = [
+                { 
+                    id: 1, 
+                    name: 'نمراحمد', 
+                    mobile: '07501234567', 
+                    type: 'فرۆشتنی خانوو', 
+                    status: 'new', 
+                    createdAt: new Date().toISOString(),
+                    location: 'هەولێر',
+                    size: '150 م²',
+                    price: '750,000,000 دینار'
+                },
+                { 
+                    id: 2, 
+                    name: 'سڵاح', 
+                    mobile: '07507654321', 
+                    type: 'کڕینی زەوی', 
+                    status: 'processing', 
+                    createdAt: new Date(Date.now() - 3600000).toISOString(),
+                    location: 'سلێمانی',
+                    size: '500 م²',
+                    price: '1,200,000,000 دینار'
+                },
+                { 
+                    id: 3, 
+                    name: 'هێمن', 
+                    mobile: '07509876543', 
+                    type: 'فرۆشتنی زەوی', 
+                    status: 'accepted', 
+                    createdAt: new Date(Date.now() - 7200000).toISOString(),
+                    location: 'دهۆک',
+                    size: '1000 م²',
+                    price: '2,500,000,000 دینار'
+                }
+            ];
+            
+            currentRequests = mockRequests;
+            updateDashboardStats(mockRequests);
+            loadTodayRequests(mockRequests);
+            displayRequests(mockRequests);
+            
+            // Mock houses data
+            const mockHouses = [
+                { id: 1, owner: 'عەلی', mobile: '07501112233', location: 'هەولێر', type: 'تاپۆ', size: '200 م²', price: '1,000,000,000 دینار', status: 'بەردەستە', createdAt: new Date().toISOString() },
+                { id: 2, owner: 'حسێن', mobile: '07502223344', location: 'سلێمانی', type: 'کارت', size: '180 م²', price: '950,000,000 دینار', status: 'فرۆشراو', createdAt: new Date().toISOString() }
+            ];
+            
+            currentHouses = mockHouses;
+            displayHouses(mockHouses);
+            updateHousesStats(mockHouses);
+            
+            // Mock lands data
+            const mockLands = [
+                { id: 1, owner: 'کەریم', mobile: '07503334455', location: 'دهۆک', size: '800 م²', price: '1,800,000,000 دینار', status: 'بەردەستە', createdAt: new Date().toISOString() },
+                { id: 2, owner: 'مەحموود', mobile: '07504445566', location: 'هەولێر', size: '1200 م²', price: '3,000,000,000 دینار', status: 'فرۆشراو', createdAt: new Date().toISOString() }
+            ];
+            
+            currentLands = mockLands;
+            displayLands(mockLands);
+            updateLandsStats(mockLands);
+            
+            // Mock ads data
+            const mockAds = [
+                { id: 1, title: 'خانووی نوێ لە هەولێر', image: null, createdAt: new Date().toISOString(), status: 'active', views: 150, clicks: 30 },
+                { id: 2, title: 'زەوی گەورە لە سلێمانی', image: null, createdAt: new Date(Date.now() - 86400000).toISOString(), status: 'inactive', views: 80, clicks: 15 }
+            ];
+            
+            currentAds = mockAds;
+            displayAdvertisements(mockAds);
+            updateAdsStats(mockAds);
         }
 
         // Update Dashboard Stats
@@ -1533,14 +1579,14 @@
         // Update Houses Stats
         function updateHousesStats(houses) {
             // Count sold houses
-            const soldHousesCount = houses.filter(house => house.status === 'sold' || house.status === 'فرۆشراو').length;
+            const soldHousesCount = houses.filter(house => house.status === 'فرۆشراو').length;
             soldHousesElement.textContent = soldHousesCount;
         }
 
         // Update Lands Stats
         function updateLandsStats(lands) {
             // Count sold lands
-            const soldLandsCount = lands.filter(land => land.status === 'sold' || land.status === 'فرۆشراو').length;
+            const soldLandsCount = lands.filter(land => land.status === 'فرۆشراو').length;
             soldLandsElement.textContent = soldLandsCount;
         }
 
@@ -1609,25 +1655,16 @@
                 
                 const apiIsOnline = await checkApiStatus();
                 if (!apiIsOnline) {
-                    requestsTableElement.innerHTML = `
-                        <tr>
-                            <td colspan="10" style="text-align: center; padding: 2rem; color: #dc3545;">
-                                <i class="fas fa-exclamation-triangle"></i> API ناچالاکە
-                            </td>
-                        </tr>
-                    `;
+                    showNotification('API ناچالاکە. بەکارهێنانی داتای نموونەیی.', 'warning');
+                    loadMockData();
                     return;
                 }
                 
-                const response = await fetch(`${API_BASE_URL}/api/requests`);
-                const result = await response.json();
+                // تێبینی: لینکی API تەنها بۆ ناردنی داواکارییە
+                // بۆ وەرگرتنی داواکاریەکان پێویستە لینکی جیاواز بەکاربهێنیت
+                showNotification('تەنها بۆ ناردنی داواکاری. داتای نموونەیی نمایش دەکرێت.', 'info');
+                loadMockData();
                 
-                if (result.success) {
-                    currentRequests = result.data;
-                    displayRequests(result.data);
-                } else {
-                    throw new Error(result.error);
-                }
             } catch (error) {
                 console.error('هەڵە لە بارکردنی داواکاریەکان:', error);
                 requestsTableElement.innerHTML = `
@@ -1715,25 +1752,13 @@
                 
                 const apiIsOnline = await checkApiStatus();
                 if (!apiIsOnline) {
-                    housesTableElement.innerHTML = `
-                        <tr>
-                            <td colspan="9" style="text-align: center; padding: 2rem; color: #dc3545;">
-                                <i class="fas fa-exclamation-triangle"></i> API ناچالاکە
-                            </td>
-                        </tr>
-                    `;
+                    showNotification('API ناچالاکە. بەکارهێنانی داتای نموونەیی.', 'warning');
                     return;
                 }
                 
-                const response = await fetch(`${API_BASE_URL}/api/houses`);
-                const result = await response.json();
+                // تێبینی: لینکی API تەنها بۆ ناردنی داواکارییە
+                showNotification('تەنها بۆ ناردنی داواکاری. داتای نموونەیی نمایش دەکرێت.', 'info');
                 
-                if (result.success) {
-                    currentHouses = result.data;
-                    displayHouses(result.data);
-                } else {
-                    throw new Error(result.error);
-                }
             } catch (error) {
                 console.error('هەڵە لە بارکردنی خانووەکان:', error);
                 housesTableElement.innerHTML = `
@@ -1771,12 +1796,12 @@
                     <td>${house.type || '-'}</td>
                     <td>${house.size || '-'}</td>
                     <td>${house.price ? formatPrice(house.price) : '-'}</td>
-                    <td><span class="status-badge ${house.status === 'available' || house.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${house.status === 'available' || house.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
+                    <td><span class="status-badge ${house.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${house.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
                     <td class="action-buttons">
                         <button class="btn btn-view" onclick="viewHouse('${house.id}')">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-accept" onclick="markHouseSold('${house.id}')" ${house.status === 'sold' || house.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                        <button class="btn btn-accept" onclick="markHouseSold('${house.id}')" ${house.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-check"></i>
                         </button>
                         <button class="btn btn-reject" onclick="removeHouse('${house.id}')">
@@ -1801,25 +1826,13 @@
                 
                 const apiIsOnline = await checkApiStatus();
                 if (!apiIsOnline) {
-                    landsTableElement.innerHTML = `
-                        <tr>
-                            <td colspan="8" style="text-align: center; padding: 2rem; color: #dc3545;">
-                                <i class="fas fa-exclamation-triangle"></i> API ناچالاکە
-                            </td>
-                        </tr>
-                    `;
+                    showNotification('API ناچالاکە. بەکارهێنانی داتای نموونەیی.', 'warning');
                     return;
                 }
                 
-                const response = await fetch(`${API_BASE_URL}/api/lands`);
-                const result = await response.json();
+                // تێبینی: لینکی API تەنها بۆ ناردنی داواکارییە
+                showNotification('تەنها بۆ ناردنی داواکاری. داتای نموونەیی نمایش دەکرێت.', 'info');
                 
-                if (result.success) {
-                    currentLands = result.data;
-                    displayLands(result.data);
-                } else {
-                    throw new Error(result.error);
-                }
             } catch (error) {
                 console.error('هەڵە لە بارکردنی زەویەکان:', error);
                 landsTableElement.innerHTML = `
@@ -1856,12 +1869,12 @@
                     <td>${land.location}</td>
                     <td>${land.size || '-'}</td>
                     <td>${land.price ? formatPrice(land.price) : '-'}</td>
-                    <td><span class="status-badge ${land.status === 'available' || land.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${land.status === 'available' || land.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
+                    <td><span class="status-badge ${land.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${land.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
                     <td class="action-buttons">
                         <button class="btn btn-view" onclick="viewLand('${land.id}')">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="btn btn-accept" onclick="markLandSold('${land.id}')" ${land.status === 'sold' || land.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                        <button class="btn btn-accept" onclick="markLandSold('${land.id}')" ${land.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-check"></i>
                         </button>
                         <button class="btn btn-reject" onclick="removeLand('${land.id}')">
@@ -1886,25 +1899,13 @@
                 
                 const apiIsOnline = await checkApiStatus();
                 if (!apiIsOnline) {
-                    adsTableElement.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem; color: #dc3545;">
-                                <i class="fas fa-exclamation-triangle"></i> API ناچالاکە
-                            </td>
-                        </tr>
-                    `;
+                    showNotification('API ناچالاکە. بەکارهێنانی داتای نموونەیی.', 'warning');
                     return;
                 }
                 
-                const response = await fetch(`${API_BASE_URL}/api/advertisements`);
-                const result = await response.json();
+                // تێبینی: لینکی API تەنها بۆ ناردنی داواکارییە
+                showNotification('تەنها بۆ ناردنی داواکاری. داتای نموونەیی نمایش دەکرێت.', 'info');
                 
-                if (result.success) {
-                    currentAds = result.data;
-                    displayAdvertisements(result.data);
-                } else {
-                    throw new Error(result.error);
-                }
             } catch (error) {
                 console.error('هەڵە لە بارکردنی رێکلامەکان:', error);
                 adsTableElement.innerHTML = `
@@ -1973,15 +1974,23 @@
             const price = prompt("نرخی خانوو:");
             
             if (owner && mobile && location && price) {
-                addHouse({
+                // Add to local state
+                const newHouse = {
+                    id: Date.now(),
                     owner,
                     mobile,
                     location,
                     type: type || 'تاپۆ',
                     size: size ? `${size} م²` : '',
                     price: `${price} دینار`,
-                    status: 'available'
-                });
+                    status: 'بەردەستە',
+                    createdAt: new Date().toISOString()
+                };
+                
+                currentHouses.push(newHouse);
+                displayHouses(currentHouses);
+                updateHousesStats(currentHouses);
+                showNotification('خانوو زیادکرا (لە کۆدی کلایەنت)', 'success');
             }
         });
 
@@ -1994,14 +2003,22 @@
             const price = prompt("نرخی زەوی:");
             
             if (owner && mobile && location && price) {
-                addLand({
+                // Add to local state
+                const newLand = {
+                    id: Date.now(),
                     owner,
                     mobile,
                     location,
                     size: size ? `${size} م²` : '',
                     price: `${price} دینار`,
-                    status: 'available'
-                });
+                    status: 'بەردەستە',
+                    createdAt: new Date().toISOString()
+                };
+                
+                currentLands.push(newLand);
+                displayLands(currentLands);
+                updateLandsStats(currentLands);
+                showNotification('زەوی زیادکرا (لە کۆدی کلایەنت)', 'success');
             }
         });
 
@@ -2059,38 +2076,42 @@
                     throw new Error('API ناچالاکە');
                 }
                 
-                const formData = new FormData();
-                formData.append('title', title);
-                formData.append('description', description);
-                if (link) formData.append('link', link);
-                formData.append('image', imageFile);
+                // Since API is only for submitting requests, we'll simulate ad submission
+                // In a real app, you would have a separate API endpoint for ads
                 
-                const response = await fetch(`${API_BASE_URL}/api/advertisements`, {
-                    method: 'POST',
-                    body: formData
-                });
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                const result = await response.json();
+                // Add to local state
+                const newAd = {
+                    id: Date.now(),
+                    title,
+                    description,
+                    link: link || null,
+                    image: null, // In real app, you would upload the image
+                    createdAt: new Date().toISOString(),
+                    status: 'active',
+                    views: 0,
+                    clicks: 0
+                };
                 
-                if (result.success) {
-                    showNotification('رێکلام بە سەرکەوتویی نێردرا', 'success');
-                    adForm.reset();
-                    imagePreview.style.display = 'none';
-                    
-                    // Reset file upload area
-                    fileUploadArea.innerHTML = `
-                        <input type="file" id="adImage" name="adImage" accept="image/*" required>
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>وێنەی رێکلامەکەت ڕابکێشە یان کلیک بکە بۆ هەڵبژاردن</p>
-                        <p style="font-size: 0.9rem; color: #777; margin-top: 0.5rem;">جۆرەکانی پەسەندکراو: JPG, PNG, GIF (کەمتر لە 5MB)</p>
-                    `;
-                    document.getElementById('adImage').addEventListener('change', adImageInput.onchange);
-                    
-                    // Refresh advertisements list
-                    loadAdvertisements();
-                } else {
-                    throw new Error(result.error);
-                }
+                currentAds.push(newAd);
+                displayAdvertisements(currentAds);
+                updateAdsStats(currentAds);
+                
+                showNotification('رێکلام زیادکرا (لە کۆدی کلایەنت)', 'success');
+                adForm.reset();
+                imagePreview.style.display = 'none';
+                
+                // Reset file upload area
+                fileUploadArea.innerHTML = `
+                    <input type="file" id="adImage" name="adImage" accept="image/*" required>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>وێنەی رێکلامەکەت ڕابکێشە یان کلیک بکە بۆ هەڵبژاردن</p>
+                    <p style="font-size: 0.9rem; color: #777; margin-top: 0.5rem;">جۆرەکانی پەسەندکراو: JPG, PNG, GIF (کەمتر لە 5MB)</p>
+                `;
+                document.getElementById('adImage').addEventListener('change', adImageInput.onchange);
+                
             } catch (error) {
                 console.error('هەڵە لە ناردنی رێکلام:', error);
                 showNotification(`هەڵە: ${error.message || 'هەڵەیەکی نەناسراو ڕوویدا'}`, 'error');
@@ -2269,23 +2290,8 @@
         // API Functions
         async function addHouse(houseData) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/houses`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(houseData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('خانوو بە سەرکەوتویی زیادکرا', 'success');
-                    loadHouses();
-                    loadDashboardData();
-                } else {
-                    throw new Error(result.error);
-                }
+                // Note: This API endpoint is only for submitting requests
+                showNotification('API تەنها بۆ ناردنی داواکارییە', 'info');
             } catch (error) {
                 console.error('هەڵە لە زیادکردنی خانوو:', error);
                 showNotification('هەڵە لە زیادکردنی خانوو', 'error');
@@ -2294,23 +2300,8 @@
 
         async function addLand(landData) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/lands`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(landData)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNotification('زەوی بە سەرکەوتویی زیادکرا', 'success');
-                    loadLands();
-                    loadDashboardData();
-                } else {
-                    throw new Error(result.error);
-                }
+                // Note: This API endpoint is only for submitting requests
+                showNotification('API تەنها بۆ ناردنی داواکارییە', 'info');
             } catch (error) {
                 console.error('هەڵە لە زیادکردنی زەوی:', error);
                 showNotification('هەڵە لە زیادکردنی زەوی', 'error');
@@ -2320,12 +2311,9 @@
         // View Request Details
         window.viewRequest = async function(requestId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/requests/${requestId}`);
-                const result = await response.json();
+                const request = currentRequests.find(r => r.id == requestId);
                 
-                if (result.success) {
-                    const request = result.data;
-                    
+                if (request) {
                     requestDetails.innerHTML = `
                         <div style="margin-bottom: 1.5rem;">
                             <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">زانیاری سەرەکی</h4>
@@ -2355,7 +2343,7 @@
                     
                     requestModal.style.display = 'flex';
                 } else {
-                    throw new Error(result.error);
+                    throw new Error('داواکاری نەدۆزرایەوە');
                 }
             } catch (error) {
                 console.error('هەڵە لە وەرگرتنی وردەکاری داواکاری:', error);
@@ -2365,7 +2353,7 @@
 
         // View House Details
         window.viewHouse = async function(houseId) {
-            const house = currentHouses.find(h => h.id === houseId);
+            const house = currentHouses.find(h => h.id == houseId);
             
             if (house) {
                 houseDetails.innerHTML = `
@@ -2377,12 +2365,12 @@
                         <p><strong>جۆر:</strong> ${house.type || 'دیاری نەکراوە'}</p>
                         <p><strong>قەبارە:</strong> ${house.size || 'دیاری نەکراوە'}</p>
                         <p><strong>نرخ:</strong> ${house.price ? formatPrice(house.price) : 'دیاری نەکراوە'}</p>
-                        <p><strong>دۆخی فرۆشتن:</strong> <span class="status-badge ${house.status === 'available' || house.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${house.status === 'available' || house.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></p>
+                        <p><strong>دۆخی فرۆشتن:</strong> <span class="status-badge ${house.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${house.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></p>
                         <p><strong>زیادکراو لە:</strong> ${formatDate(house.createdAt)}</p>
                     </div>
                     
                     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                        <button class="btn btn-accept" style="flex: 1;" onclick="markHouseSold('${house.id}'); houseModal.style.display='none'" ${house.status === 'sold' || house.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                        <button class="btn btn-accept" style="flex: 1;" onclick="markHouseSold('${house.id}'); houseModal.style.display='none'" ${house.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-check"></i>
                             نیشانەکردنی وەک فرۆشراو
                         </button>
@@ -2400,12 +2388,9 @@
         // View Ad Details
         window.viewAd = async function(adId) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/advertisements/${adId}`);
-                const result = await response.json();
+                const ad = currentAds.find(a => a.id == adId);
                 
-                if (result.success) {
-                    const ad = result.data;
-                    
+                if (ad) {
                     adDetails.innerHTML = `
                         <div style="text-align: center; margin-bottom: 1.5rem;">
                             ${ad.image ? `<img src="${API_BASE_URL}${ad.image}" alt="${ad.title}" style="max-width: 100%; border-radius: var(--border-radius); margin-bottom: 1rem;">` : ''}
@@ -2439,7 +2424,7 @@
                     
                     adModal.style.display = 'flex';
                 } else {
-                    throw new Error(result.error);
+                    throw new Error('رێکلام نەدۆزرایەوە');
                 }
             } catch (error) {
                 console.error('هەڵە لە وەرگرتنی وردەکاری رێکلام:', error);
@@ -2451,22 +2436,14 @@
         window.acceptRequest = async function(requestId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم داواکاریە وەربگریت؟')) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/requests/${requestId}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ status: 'accepted' })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showNotification('داواکاری وەرگیرا', 'success');
-                        loadRequests();
-                        loadDashboardData();
-                    } else {
-                        throw new Error(result.error);
+                    // Update local state
+                    const requestIndex = currentRequests.findIndex(r => r.id == requestId);
+                    if (requestIndex !== -1) {
+                        currentRequests[requestIndex].status = 'accepted';
+                        displayRequests(currentRequests);
+                        loadTodayRequests(currentRequests);
+                        updateDashboardStats(currentRequests);
+                        showNotification('داواکاری وەرگیرا (لە کۆدی کلایەنت)', 'success');
                     }
                 } catch (error) {
                     console.error('هەڵە لە وەرگرتنی داواکاری:', error);
@@ -2479,22 +2456,14 @@
         window.rejectRequest = async function(requestId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم داواکاریە ڕەت بکەیتەوە؟')) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/requests/${requestId}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ status: 'rejected' })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showNotification('داواکاری ڕەتکرایەوە', 'success');
-                        loadRequests();
-                        loadDashboardData();
-                    } else {
-                        throw new Error(result.error);
+                    // Update local state
+                    const requestIndex = currentRequests.findIndex(r => r.id == requestId);
+                    if (requestIndex !== -1) {
+                        currentRequests[requestIndex].status = 'rejected';
+                        displayRequests(currentRequests);
+                        loadTodayRequests(currentRequests);
+                        updateDashboardStats(currentRequests);
+                        showNotification('داواکاری ڕەتکرایەوە (لە کۆدی کلایەنت)', 'success');
                     }
                 } catch (error) {
                     console.error('هەڵە لە ڕەتکردنەوەی داواکاری:', error);
@@ -2507,15 +2476,13 @@
         window.markHouseSold = async function(houseId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم خانووە نیشانە بکەیت وەک فرۆشراو؟')) {
                 try {
-                    // In a real API, you would have an endpoint to update house status
-                    showNotification('خانوو نیشانەکرا وەک فرۆشراو', 'success');
-                    
                     // Update local state
-                    const houseIndex = currentHouses.findIndex(h => h.id === houseId);
+                    const houseIndex = currentHouses.findIndex(h => h.id == houseId);
                     if (houseIndex !== -1) {
                         currentHouses[houseIndex].status = 'فرۆشراو';
                         displayHouses(currentHouses);
-                        loadDashboardData();
+                        updateHousesStats(currentHouses);
+                        showNotification('خانوو نیشانەکرا وەک فرۆشراو (لە کۆدی کلایەنت)', 'success');
                     }
                 } catch (error) {
                     console.error('هەڵە لە نیشانەکردنی خانوو:', error);
@@ -2528,13 +2495,11 @@
         window.removeHouse = async function(houseId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم خانووە بسڕیتەوە؟')) {
                 try {
-                    // In a real API, you would have a DELETE endpoint
-                    showNotification('خانوو سڕایەوە', 'success');
-                    
                     // Update local state
-                    currentHouses = currentHouses.filter(h => h.id !== houseId);
+                    currentHouses = currentHouses.filter(h => h.id != houseId);
                     displayHouses(currentHouses);
-                    loadDashboardData();
+                    updateHousesStats(currentHouses);
+                    showNotification('خانوو سڕایەوە (لە کۆدی کلایەنت)', 'success');
                 } catch (error) {
                     console.error('هەڵە لە سڕینەوەی خانوو:', error);
                     showNotification('هەڵە لە سڕینەوەی خانوو', 'error');
@@ -2546,14 +2511,13 @@
         window.markLandSold = async function(landId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم زەویە نیشانە بکەیت وەک فرۆشراو؟')) {
                 try {
-                    showNotification('زەوی نیشانەکرا وەک فرۆشراو', 'success');
-                    
                     // Update local state
-                    const landIndex = currentLands.findIndex(l => l.id === landId);
+                    const landIndex = currentLands.findIndex(l => l.id == landId);
                     if (landIndex !== -1) {
                         currentLands[landIndex].status = 'فرۆشراو';
                         displayLands(currentLands);
-                        loadDashboardData();
+                        updateLandsStats(currentLands);
+                        showNotification('زەوی نیشانەکرا وەک فرۆشراو (لە کۆدی کلایەنت)', 'success');
                     }
                 } catch (error) {
                     console.error('هەڵە لە نیشانەکردنی زەوی:', error);
@@ -2566,12 +2530,11 @@
         window.removeLand = async function(landId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم زەویە بسڕیتەوە؟')) {
                 try {
-                    showNotification('زەوی سڕایەوە', 'success');
-                    
                     // Update local state
-                    currentLands = currentLands.filter(l => l.id !== landId);
+                    currentLands = currentLands.filter(l => l.id != landId);
                     displayLands(currentLands);
-                    loadDashboardData();
+                    updateLandsStats(currentLands);
+                    showNotification('زەوی سڕایەوە (لە کۆدی کلایەنت)', 'success');
                 } catch (error) {
                     console.error('هەڵە لە سڕینەوەی زەوی:', error);
                     showNotification('هەڵە لە سڕینەوەی زەوی', 'error');
@@ -2588,22 +2551,13 @@
             
             if (confirm(confirmMessage)) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/advertisements/${adId}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ status: newStatus })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showNotification(`رێکلام ${newStatus === 'active' ? 'چالاک' : 'ناچالاک'} کرا`, 'success');
-                        loadAdvertisements();
-                        loadDashboardData();
-                    } else {
-                        throw new Error(result.error);
+                    // Update local state
+                    const adIndex = currentAds.findIndex(a => a.id == adId);
+                    if (adIndex !== -1) {
+                        currentAds[adIndex].status = newStatus;
+                        displayAdvertisements(currentAds);
+                        updateAdsStats(currentAds);
+                        showNotification(`رێکلام ${newStatus === 'active' ? 'چالاک' : 'ناچالاک'} کرا (لە کۆدی کلایەنت)`, 'success');
                     }
                 } catch (error) {
                     console.error('هەڵە لە گۆڕینی دۆخی رێکلام:', error);
@@ -2616,19 +2570,11 @@
         window.removeAd = async function(adId) {
             if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم رێکلامە بسڕیتەوە؟')) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/advertisements/${adId}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        showNotification('رێکلام سڕایەوە', 'success');
-                        loadAdvertisements();
-                        loadDashboardData();
-                    } else {
-                        throw new Error(result.error);
-                    }
+                    // Update local state
+                    currentAds = currentAds.filter(a => a.id != adId);
+                    displayAdvertisements(currentAds);
+                    updateAdsStats(currentAds);
+                    showNotification('رێکلام سڕایەوە (لە کۆدی کلایەنت)', 'success');
                 } catch (error) {
                     console.error('هەڵە لە سڕینەوەی رێکلام:', error);
                     showNotification('هەڵە لە سڕینەوەی رێکلام', 'error');
@@ -2638,11 +2584,34 @@
 
         // View Land
         window.viewLand = function(landId) {
-            const land = currentLands.find(l => l.id === landId);
+            const land = currentLands.find(l => l.id == landId);
             
             if (land) {
-                // For now, just show an alert
-                alert(`زانیاری زەوی:\n\nخاوەن: ${land.owner}\nمۆبایل: ${land.mobile}\nشوێن: ${land.location}\nقەبارە: ${land.size}\nنرخ: ${land.price}\nدۆخ: ${land.status === 'available' || land.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}`);
+                houseDetails.innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">زانیاری زەوی</h4>
+                        <p><strong>ناوی خاوەن:</strong> ${land.owner}</p>
+                        <p><strong>مۆبایل:</strong> ${land.mobile}</p>
+                        <p><strong>شوێن:</strong> ${land.location}</p>
+                        <p><strong>قەبارە:</strong> ${land.size || 'دیاری نەکراوە'}</p>
+                        <p><strong>نرخ:</strong> ${land.price ? formatPrice(land.price) : 'دیاری نەکراوە'}</p>
+                        <p><strong>دۆخی فرۆشتن:</strong> <span class="status-badge ${land.status === 'بەردەستە' ? 'status-new' : 'status-completed'}">${land.status === 'بەردەستە' ? 'بەردەستە' : 'فرۆشراو'}</span></p>
+                        <p><strong>زیادکراو لە:</strong> ${formatDate(land.createdAt)}</p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn btn-accept" style="flex: 1;" onclick="markLandSold('${land.id}'); houseModal.style.display='none'" ${land.status === 'فرۆشراو' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <i class="fas fa-check"></i>
+                            نیشانەکردنی وەک فرۆشراو
+                        </button>
+                        <button class="btn btn-reject" style="flex: 1;" onclick="removeLand('${land.id}'); houseModal.style.display='none'">
+                            <i class="fas fa-trash"></i>
+                            سڕینەوە
+                        </button>
+                    </div>
+                `;
+                
+                houseModal.style.display = 'flex';
             }
         };
     </script>
