@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی بەڕێوەبردنی داواکاریەکان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-secondary: #34495e;
+            --admin-accent: #e74c3c;
+            --admin-success: #27ae60;
+            --admin-warning: #f39c12;
+            --admin-light: #ecf0f1;
+            --admin-dark: #2c3e50;
+            --admin-text: #333;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --admin-primary: #1a252f;
+            --admin-secondary: #2c3e50;
+            --admin-accent: #e74c3c;
+            --admin-success: #2ecc71;
+            --admin-warning: #f1c40f;
+            --admin-light: #34495e;
+            --admin-dark: #ecf0f1;
+            --admin-text: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--admin-light);
+            color: var(--admin-text);
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .admin-header {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            color: white;
+            padding: 1.2rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-logo i {
+            color: var(--admin-accent);
+        }
+
+        .admin-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-theme-toggle {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .admin-theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+        }
+
+        .logout-btn {
+            background-color: var(--admin-accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        [data-theme="dark"] .sidebar {
+            background-color: var(--admin-secondary);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            color: var(--admin-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--admin-accent);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .sidebar-title {
+            color: var(--admin-dark);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1rem;
+            color: var(--admin-text);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--admin-primary);
+            transform: translateX(-5px);
+        }
+
+        .sidebar-link.active {
+            background-color: var(--admin-primary);
+            color: white;
+        }
+
+        [data-theme="dark"] .sidebar-link.active {
+            background-color: var(--admin-accent);
+        }
+
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .main-content {
+            background-color: var(--admin-secondary);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        [data-theme="dark"] .content-header {
+            border-bottom-color: #444;
+        }
+
+        .content-title {
+            font-size: 1.8rem;
+            color: var(--admin-primary);
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .content-title {
+            color: var(--admin-dark);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-card-title {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #eee;
+        }
+
+        [data-theme="dark"] .table-container {
+            border-color: #444;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: var(--admin-primary);
+            color: white;
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .data-table th {
+            background-color: var(--admin-secondary);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        [data-theme="dark"] .data-table td {
+            border-bottom-color: #444;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        [data-theme="dark"] .data-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-new {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #2980b9;
+        }
+
+        .status-processing {
+            background-color: rgba(241, 196, 15, 0.2);
+            color: #f39c12;
+        }
+
+        .status-completed {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #2980b9;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .btn-accept {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+
+        .btn-accept:hover {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #c0392b;
+        }
+
+        .btn-reject:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        /* Form Styles */
+        .form-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+        }
+
+        [data-theme="dark"] .form-section {
+            background-color: var(--admin-secondary);
+            border-color: #444;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--admin-primary);
+        }
+
+        [data-theme="dark"] .form-label {
+            color: var(--admin-dark);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+            color: var(--admin-text);
+        }
+
+        [data-theme="dark"] .form-input, 
+        [data-theme="dark"] .form-select, 
+        [data-theme="dark"] .form-textarea {
+            background-color: var(--admin-light);
+            border-color: #555;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--admin-accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+
+        .file-upload {
+            position: relative;
+            border: 2px dashed #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload:hover {
+            border-color: var(--admin-accent);
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: #bdc3c7;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background-color: var(--admin-accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        .admin-footer {
+            background-color: var(--admin-primary);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .admin-footer p {
+            opacity: 0.8;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background-color: var(--admin-secondary);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            background-color: var(--admin-primary);
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--admin-accent);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+            
+            .stats-cards {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="container admin-header-content">
+            <div class="admin-logo">
+                <i class="fas fa-cogs"></i>
+                <span>سیستەمی بەڕێوەبردنی داواکاریەکان</span>
+            </div>
+            <div class="admin-controls">
+                <button class="admin-theme-toggle" id="adminThemeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    چوونەدەرەوە
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="container">
+        <div class="dashboard">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h3 class="sidebar-title">مێنیوی بەڕێوەبردن</h3>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            داشبۆرد
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" data-section="requests">
+                            <i class="fas fa-inbox"></i>
+                            وەرگرتنی داواکاریەکان
+                            <span class="notification-badge" id="requestCount">0</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" data-section="houses">
+                            <i class="fas fa-home"></i>
+                            بەشی خانووەکان
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" data-section="lands">
+                            <i class="fas fa-mountain"></i>
+                            بەشی زەویەکان
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" data-section="advertisements">
+                            <i class="fas fa-ad"></i>
+                            بەشی ناردنی رێکلام
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link" data-section="settings">
+                            <i class="fas fa-cog"></i>
+                            ڕێکخستنەکان
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="content-section active">
+                    <div class="content-header">
+                        <h2 class="content-title">داشبۆردی بەڕێوەبردن</h2>
+                        <div class="date-display" id="currentDate"></div>
+                    </div>
+
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <i class="fas fa-inbox"></i>
+                            <div class="stat-card-title">داواکاری نوێ</div>
+                            <div class="stat-card-value" id="newRequests">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-home"></i>
+                            <div class="stat-card-title">خانووی فرۆشراو</div>
+                            <div class="stat-card-value" id="soldHouses">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-mountain"></i>
+                            <div class="stat-card-title">زەوی فرۆشراو</div>
+                            <div class="stat-card-value" id="soldLands">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-ad"></i>
+                            <div class="stat-card-title">رێکلامە چالاکەکان</div>
+                            <div class="stat-card-value" id="activeAds">0</div>
+                        </div>
+                    </div>
+
+                    <div class="content-header">
+                        <h3 class="content-title" style="font-size: 1.4rem;">داواکاریەکانی ئەمڕۆ</h3>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژم.</th>
+                                    <th>ناو</th>
+                                    <th>مۆبایل</th>
+                                    <th>جۆر</th>
+                                    <th>کات</th>
+                                    <th>دۆخ</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayRequests">
+                                <!-- داواکاریەکانی ئەمڕۆ لێرە دادەنرێن -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Requests Section -->
+                <div id="requests-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">وەرگرتنی داواکاریەکان</h2>
+                        <button class="btn btn-view" id="refreshRequests">
+                            <i class="fas fa-sync-alt"></i>
+                            نوێکردنەوە
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژم.</th>
+                                    <th>ناو</th>
+                                    <th>مۆبایل</th>
+                                    <th>جۆری داواکاری</th>
+                                    <th>شوێن</th>
+                                    <th>قەبارە</th>
+                                    <th>نرخ</th>
+                                    <th>کات</th>
+                                    <th>دۆخ</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTable">
+                                <!-- هەموو داواکاریەکان لێرە دادەنرێن -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Houses Section -->
+                <div id="houses-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">بەشی خانووەکان</h2>
+                        <button class="btn btn-accept" id="addHouseBtn">
+                            <i class="fas fa-plus"></i>
+                            زیادکردنی خانوو
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژم.</th>
+                                    <th>ناوی خاوەن</th>
+                                    <th>مۆبایل</th>
+                                    <th>شوێن</th>
+                                    <th>جۆر</th>
+                                    <th>قەبارە (م²)</th>
+                                    <th>نرخ</th>
+                                    <th>دۆخی فرۆشتن</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="housesTable">
+                                <!-- خانووەکان لێرە دادەنرێن -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Lands Section -->
+                <div id="lands-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">بەشی زەویەکان</h2>
+                        <button class="btn btn-accept" id="addLandBtn">
+                            <i class="fas fa-plus"></i>
+                            زیادکردنی زەوی
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژم.</th>
+                                    <th>ناوی خاوەن</th>
+                                    <th>مۆبایل</th>
+                                    <th>شوێن</th>
+                                    <th>قەبارە (م²)</th>
+                                    <th>نرخ</th>
+                                    <th>دۆخی فرۆشتن</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="landsTable">
+                                <!-- زەویەکان لێرە دادەنرێن -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Advertisements Section -->
+                <div id="advertisements-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">بەشی ناردنی رێکلام</h2>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--admin-primary);">ناردنی رێکلامی نوێ</h3>
+                        
+                        <form id="adForm">
+                            <div class="form-group">
+                                <label class="form-label" for="adTitle">
+                                    <i class="fas fa-heading"></i>
+                                    سەردێری رێکلام:
+                                </label>
+                                <input type="text" class="form-input" id="adTitle" name="adTitle" placeholder="سەردێری رێکلامەکە بنووسە" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="adDescription">
+                                    <i class="fas fa-align-left"></i>
+                                    وەسفی رێکلام:
+                                </label>
+                                <textarea class="form-textarea" id="adDescription" name="adDescription" rows="4" placeholder="وەسفی رێکلامەکە بنووسە"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-image"></i>
+                                    وێنەی رێکلام:
+                                </label>
+                                <div class="file-upload">
+                                    <input type="file" id="adImage" name="adImage" accept="image/*" required>
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>وێنەی رێکلامەکەت ڕابکێشە یان کلیک بکە بۆ هەڵبژاردن</p>
+                                    <p style="font-size: 0.9rem; color: #777; margin-top: 0.5rem;">جۆرەکانی پەسەندکراو: JPG, PNG, GIF (کەمتر لە 5MB)</p>
+                                </div>
+                                <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                                    <img id="previewImage" src="#" alt="پیشاندانی وێنە" style="max-width: 300px; border-radius: var(--border-radius);">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="adLink">
+                                    <i class="fas fa-link"></i>
+                                    لینکی رێکلام (ئارەزوومەندانە):
+                                </label>
+                                <input type="url" class="form-input" id="adLink" name="adLink" placeholder="https://example.com">
+                            </div>
+
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                ناردنی رێکلام
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="content-header">
+                        <h3 class="content-title" style="font-size: 1.4rem;">رێکلامە پێشووەکان</h3>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ژم.</th>
+                                    <th>سەردێر</th>
+                                    <th>وێنە</th>
+                                    <th>دروستکراو لە</th>
+                                    <th>دۆخ</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adsTable">
+                                <!-- رێکلامەکان لێرە دادەنرێن -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">ڕێکخستنەکان</h2>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--admin-primary);">ڕێکخستنی سیستەم</h3>
+                        
+                        <form id="settingsForm">
+                            <div class="form-group">
+                                <label class="form-label" for="companyName">
+                                    <i class="fas fa-building"></i>
+                                    ناوی کۆمپانیا:
+                                </label>
+                                <input type="text" class="form-input" id="companyName" name="companyName" value="کۆمپانیای فرۆشتنی خانوو و زەوی" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="adminEmail">
+                                    <i class="fas fa-envelope"></i>
+                                    ئیمەیڵی بەڕێوەبردن:
+                                </label>
+                                <input type="email" class="form-input" id="adminEmail" name="adminEmail" value="admin@example.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="notificationEmail">
+                                    <i class="fas fa-bell"></i>
+                                    ئیمەیڵی ئاگادارکردنەوە:
+                                </label>
+                                <input type="email" class="form-input" id="notificationEmail" name="notificationEmail" value="notifications@example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="maxFileSize">
+                                    <i class="fas fa-file-upload"></i>
+                                    قەبارەی گەورەی فایل (بە MB):
+                                </label>
+                                <select class="form-select" id="maxFileSize" name="maxFileSize">
+                                    <option value="5">5 MB</option>
+                                    <option value="10" selected>10 MB</option>
+                                    <option value="20">20 MB</option>
+                                    <option value="50">50 MB</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-language"></i>
+                                    زمان:
+                                </label>
+                                <select class="form-select" id="language" name="language">
+                                    <option value="ku" selected>کوردی</option>
+                                    <option value="ar">عەرەبی</option>
+                                    <option value="en">ئینگلیزی</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-save"></i>
+                                پاشەکەوتکردنی ڕێکخستنەکان
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="admin-footer">
+        <div class="container">
+            <p>&copy; ٢٠٢٣ سیستەمی بەڕێوەبردنی داواکاریەکان. هەموو مافەکان پارێزراون.</p>
+        </div>
+    </footer>
+
+    <!-- Request Details Modal -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">وردەکاری داواکاری</h3>
+                <button class="modal-close" id="closeRequestModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="requestDetails">
+                    <!-- وردەکاری داواکاری لێرە دادەنرێت -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- House Details Modal -->
+    <div id="houseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">وردەکاری خانوو</h3>
+                <button class="modal-close" id="closeHouseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="houseDetails">
+                    <!-- وردەکاری خانوو لێرە دادەنرێت -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Details Modal -->
+    <div id="adModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">وردەکاری رێکلام</h3>
+                <button class="modal-close" id="closeAdModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="adDetails">
+                    <!-- وردەکاری رێکلام لێرە دادەنرێت -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock Data for demonstration
+        const mockRequests = [
+            {
+                id: 1,
+                name: "هەڤال عەزیز",
+                mobile: "٠٧٧٠ ١٢٣ ٤٥٦٧",
+                type: "فرۆشتنی خانوو",
+                location: "شۆرش",
+                size: "150 م²",
+                price: "١٠٠,٠٠٠,٠٠٠ دینار",
+                time: "ئەمڕۆ ١٠:٣٠",
+                status: "new",
+                details: {
+                    saleType: "تاپۆ",
+                    additionalInfo: "خانووەکە نوێیە و لە ساڵی ٢٠٢٢ دروست کراوە."
+                }
+            },
+            {
+                id: 2,
+                name: "سەردار محمد",
+                mobile: "٠٧٥٠ ٩٨٧ ٦٥٤٣",
+                type: "کڕینی خانوو",
+                location: "شاری یۆنانی",
+                size: "200 م²",
+                price: "١٥٠,٠٠٠,٠٠٠ دینار",
+                time: "ئەمڕۆ ٠٩:١٥",
+                status: "new",
+                details: {
+                    budget: "١٥٠-٢٠٠ ملیۆن",
+                    preferredLocation: "ناوەندی شار"
+                }
+            },
+            {
+                id: 3,
+                name: "دیار کەریم",
+                mobile: "٠٧٧١ ٢٣٤ ٥٦٧٨",
+                type: "فرۆشتنی زەوی",
+                location: "کوێستان",
+                size: "500 م²",
+                price: "٥٠,٠٠٠,٠٠٠ دینار",
+                time: "دوێنێ ١٦:٤٥",
+                status: "processing",
+                details: {
+                    landType: "کێڵگە",
+                    hasWater: "بەڵێ"
+                }
+            }
+        ];
+
+        const mockHouses = [
+            {
+                id: 1,
+                owner: "هەڤال عەزیز",
+                mobile: "٠٧٧٠ ١٢٣ ٤٥٦٧",
+                location: "شۆرش",
+                type: "تاپۆ",
+                size: "150 م²",
+                price: "١٠٠,٠٠٠,٠٠٠ دینار",
+                status: "available",
+                addedDate: "٢٠٢٣-١٠-١٠"
+            },
+            {
+                id: 2,
+                owner: "عەلی حەسەن",
+                mobile: "٠٧٥٠ ١١١ ٢٢٢٢",
+                location: "ئارام گاردن",
+                type: "کارت",
+                size: "200 م²",
+                price: "١٨٠,٠٠٠,٠٠٠ دینار",
+                status: "sold",
+                addedDate: "٢٠٢٣-٠٩-٢٥"
+            }
+        ];
+
+        const mockLands = [
+            {
+                id: 1,
+                owner: "دیار کەریم",
+                mobile: "٠٧٧١ ٢٣٤ ٥٦٧٨",
+                location: "کوێستان",
+                size: "500 م²",
+                price: "٥٠,٠٠٠,٠٠٠ دینار",
+                status: "available",
+                addedDate: "٢٠٢٣-١٠-٠٥"
+            }
+        ];
+
+        const mockAds = [
+            {
+                id: 1,
+                title: "خانووی نوێ لە شۆرش",
+                image: "https://via.placeholder.com/300x150",
+                description: "خانووی نوێ و مۆدێرن لە شاری شۆرش",
+                created: "٢٠٢٣-١٠-٠١",
+                status: "active"
+            },
+            {
+                id: 2,
+                title: "زەویی گەورە لە کوێستان",
+                image: "https://via.placeholder.com/300x150",
+                description: "زەویی گەورە بۆ دروستکردنی خانوو",
+                created: "٢٠٢٣-٠٩-١٥",
+                status: "inactive"
+            }
+        ];
+
+        // DOM Elements
+        const adminThemeToggle = document.getElementById('adminThemeToggle');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const currentDateElement = document.getElementById('currentDate');
+        const requestCountElement = document.getElementById('requestCount');
+        const newRequestsElement = document.getElementById('newRequests');
+        const soldHousesElement = document.getElementById('soldHouses');
+        const soldLandsElement = document.getElementById('soldLands');
+        const activeAdsElement = document.getElementById('activeAds');
+        const todayRequestsElement = document.getElementById('todayRequests');
+        const requestsTableElement = document.getElementById('requestsTable');
+        const housesTableElement = document.getElementById('housesTable');
+        const landsTableElement = document.getElementById('landsTable');
+        const adsTableElement = document.getElementById('adsTable');
+        const refreshRequestsBtn = document.getElementById('refreshRequests');
+        const addHouseBtn = document.getElementById('addHouseBtn');
+        const addLandBtn = document.getElementById('addLandBtn');
+        const adForm = document.getElementById('adForm');
+        const adImageInput = document.getElementById('adImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+        const settingsForm = document.getElementById('settingsForm');
+        const requestModal = document.getElementById('requestModal');
+        const houseModal = document.getElementById('houseModal');
+        const adModal = document.getElementById('adModal');
+        const closeRequestModal = document.getElementById('closeRequestModal');
+        const closeHouseModal = document.getElementById('closeHouseModal');
+        const closeAdModal = document.getElementById('closeAdModal');
+        const requestDetails = document.getElementById('requestDetails');
+        const houseDetails = document.getElementById('houseDetails');
+        const adDetails = document.getElementById('adDetails');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.textContent = now.toLocaleDateString('ku', options);
+            
+            // Load saved theme
+            const savedTheme = localStorage.getItem('adminTheme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                adminThemeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+            
+            // Load mock data
+            loadDashboardData();
+            loadRequestsTable();
+            loadHousesTable();
+            loadLandsTable();
+            loadAdsTable();
+        });
+
+        // Theme Toggle
+        adminThemeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const icon = adminThemeToggle.querySelector('i');
+            
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('adminTheme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('adminTheme', 'dark');
+            }
+        });
+
+        // Sidebar Navigation
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active sidebar link
+                sidebarLinks.forEach(sidebarLink => sidebarLink.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show selected section
+                const sectionId = link.getAttribute('data-section');
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === `${sectionId}-section`) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('ئایا دڵنیایت کە دەتەوێت لە سیستەمەکە دەرچیت؟')) {
+                // In a real app, you would clear session/token and redirect to login
+                alert('بە سەرکەوتویی چوویتەدەرەوە');
+                // Redirect to login page (commented for demo)
+                // window.location.href = 'login.html';
+            }
+        });
+
+        // Load Dashboard Data
+        function loadDashboardData() {
+            // Count new requests
+            const newRequestsCount = mockRequests.filter(req => req.status === 'new').length;
+            newRequestsElement.textContent = newRequestsCount;
+            requestCountElement.textContent = newRequestsCount;
+            
+            // Count sold houses
+            const soldHousesCount = mockHouses.filter(house => house.status === 'sold').length;
+            soldHousesElement.textContent = soldHousesCount;
+            
+            // Count sold lands
+            const soldLandsCount = mockLands.filter(land => land.status === 'sold').length;
+            soldLandsElement.textContent = soldLandsCount;
+            
+            // Count active ads
+            const activeAdsCount = mockAds.filter(ad => ad.status === 'active').length;
+            activeAdsElement.textContent = activeAdsCount;
+            
+            // Load today's requests
+            loadTodayRequests();
+        }
+
+        // Load Today's Requests
+        function loadTodayRequests() {
+            todayRequestsElement.innerHTML = '';
+            
+            const todayRequests = mockRequests.filter(req => req.time.includes('ئەمڕۆ'));
+            
+            todayRequests.forEach(request => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${request.id}</td>
+                    <td>${request.name}</td>
+                    <td>${request.mobile}</td>
+                    <td>${request.type}</td>
+                    <td>${request.time}</td>
+                    <td><span class="status-badge ${request.status === 'new' ? 'status-new' : 'status-processing'}">${request.status === 'new' ? 'نوێ' : 'لە کاردایە'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewRequest(${request.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-accept" onclick="acceptRequest(${request.id})">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </td>
+                `;
+                todayRequestsElement.appendChild(row);
+            });
+            
+            if (todayRequests.length === 0) {
+                todayRequestsElement.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #777;">
+                            هیچ داواکاریەکی ئەمڕۆ نییە
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load Requests Table
+        function loadRequestsTable() {
+            requestsTableElement.innerHTML = '';
+            
+            mockRequests.forEach(request => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${request.id}</td>
+                    <td>${request.name}</td>
+                    <td>${request.mobile}</td>
+                    <td>${request.type}</td>
+                    <td>${request.location}</td>
+                    <td>${request.size}</td>
+                    <td>${request.price}</td>
+                    <td>${request.time}</td>
+                    <td><span class="status-badge ${request.status === 'new' ? 'status-new' : 'status-processing'}">${request.status === 'new' ? 'نوێ' : 'لە کاردایە'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewRequest(${request.id})">
+                            <i class="fas fa-eye"></i>
+                            بینین
+                        </button>
+                        <button class="btn btn-accept" onclick="acceptRequest(${request.id})">
+                            <i class="fas fa-check"></i>
+                            وەرگرتن
+                        </button>
+                        <button class="btn btn-reject" onclick="rejectRequest(${request.id})">
+                            <i class="fas fa-times"></i>
+                            ڕەتکردنەوە
+                        </button>
+                    </td>
+                `;
+                requestsTableElement.appendChild(row);
+            });
+        }
+
+        // Load Houses Table
+        function loadHousesTable() {
+            housesTableElement.innerHTML = '';
+            
+            mockHouses.forEach(house => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${house.id}</td>
+                    <td>${house.owner}</td>
+                    <td>${house.mobile}</td>
+                    <td>${house.location}</td>
+                    <td>${house.type}</td>
+                    <td>${house.size}</td>
+                    <td>${house.price}</td>
+                    <td><span class="status-badge ${house.status === 'available' ? 'status-new' : 'status-completed'}">${house.status === 'available' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewHouse(${house.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-accept" onclick="markHouseSold(${house.id})" ${house.status === 'sold' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-reject" onclick="removeHouse(${house.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                housesTableElement.appendChild(row);
+            });
+            
+            // Add empty row if no houses
+            if (mockHouses.length === 0) {
+                housesTableElement.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 2rem; color: #777;">
+                            هیچ خانوویەک تۆمار نەکراوە
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load Lands Table
+        function loadLandsTable() {
+            landsTableElement.innerHTML = '';
+            
+            mockLands.forEach(land => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${land.id}</td>
+                    <td>${land.owner}</td>
+                    <td>${land.mobile}</td>
+                    <td>${land.location}</td>
+                    <td>${land.size}</td>
+                    <td>${land.price}</td>
+                    <td><span class="status-badge ${land.status === 'available' ? 'status-new' : 'status-completed'}">${land.status === 'available' ? 'بەردەستە' : 'فرۆشراو'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewLand(${land.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-accept" onclick="markLandSold(${land.id})" ${land.status === 'sold' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-reject" onclick="removeLand(${land.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                landsTableElement.appendChild(row);
+            });
+            
+            // Add empty row if no lands
+            if (mockLands.length === 0) {
+                landsTableElement.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: #777;">
+                            هیچ زەویەک تۆمار نەکراوە
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Load Ads Table
+        function loadAdsTable() {
+            adsTableElement.innerHTML = '';
+            
+            mockAds.forEach(ad => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${ad.id}</td>
+                    <td>${ad.title}</td>
+                    <td><img src="${ad.image}" alt="${ad.title}" style="width: 80px; height: 50px; object-fit: cover; border-radius: 4px;"></td>
+                    <td>${ad.created}</td>
+                    <td><span class="status-badge ${ad.status === 'active' ? 'status-completed' : 'status-processing'}">${ad.status === 'active' ? 'چالاک' : 'ناچالاک'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-view" onclick="viewAd(${ad.id})">
+                            <i class="fas fa-eye"></i>
+                            بینین
+                        </button>
+                        <button class="btn btn-accept" onclick="toggleAdStatus(${ad.id})">
+                            <i class="fas fa-power-off"></i>
+                            ${ad.status === 'active' ? 'ناچالاککردن' : 'چالاککردن'}
+                        </button>
+                        <button class="btn btn-reject" onclick="removeAd(${ad.id})">
+                            <i class="fas fa-trash"></i>
+                            سڕینەوە
+                        </button>
+                    </td>
+                `;
+                adsTableElement.appendChild(row);
+            });
+        }
+
+        // Refresh Requests
+        refreshRequestsBtn.addEventListener('click', () => {
+            refreshRequestsBtn.querySelector('i').className = 'fas fa-spinner fa-spin';
+            setTimeout(() => {
+                // Simulate API call
+                loadRequestsTable();
+                loadDashboardData();
+                refreshRequestsBtn.querySelector('i').className = 'fas fa-sync-alt';
+                alert('داواکاریەکان نوێکرانەوە');
+            }, 1000);
+        });
+
+        // Add House
+        addHouseBtn.addEventListener('click', () => {
+            const newHouse = {
+                id: mockHouses.length + 1,
+                owner: prompt("ناوی خاوەنی خانوو:"),
+                mobile: prompt("ژمارەی مۆبایلی خاوەن:"),
+                location: prompt("شوێنی خانوو:"),
+                type: prompt("جۆری خانوو (تاپۆ/کارت):"),
+                size: prompt("قەبارەی خانوو (بە مەتر):") + " م²",
+                price: prompt("نرخی خانوو:") + " دینار",
+                status: "available",
+                addedDate: new Date().toLocaleDateString('ku')
+            };
+            
+            if (newHouse.owner && newHouse.mobile && newHouse.location) {
+                mockHouses.push(newHouse);
+                loadHousesTable();
+                loadDashboardData();
+                alert('خانوو بە سەرکەوتویی زیادکرا');
+            }
+        });
+
+        // Add Land
+        addLandBtn.addEventListener('click', () => {
+            const newLand = {
+                id: mockLands.length + 1,
+                owner: prompt("ناوی خاوەنی زەوی:"),
+                mobile: prompt("ژمارەی مۆبایلی خاوەن:"),
+                location: prompt("شوێنی زەوی:"),
+                size: prompt("قەبارەی زەوی (بە مەتر):") + " م²",
+                price: prompt("نرخی زەوی:") + " دینار",
+                status: "available",
+                addedDate: new Date().toLocaleDateString('ku')
+            };
+            
+            if (newLand.owner && newLand.mobile && newLand.location) {
+                mockLands.push(newLand);
+                loadLandsTable();
+                loadDashboardData();
+                alert('زەوی بە سەرکەوتویی زیادکرا');
+            }
+        });
+
+        // Ad Image Preview
+        adImageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Submit Ad Form
+        adForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('adTitle').value;
+            const description = document.getElementById('adDescription').value;
+            
+            if (!title) {
+                alert('تکایە سەردێری رێکلام بنووسە');
+                return;
+            }
+            
+            // Simulate file upload
+            const newAd = {
+                id: mockAds.length + 1,
+                title: title,
+                description: description,
+                image: previewImage.src || "https://via.placeholder.com/300x150",
+                created: new Date().toLocaleDateString('ku'),
+                status: "active"
+            };
+            
+            mockAds.unshift(newAd);
+            loadAdsTable();
+            loadDashboardData();
+            
+            // Reset form
+            adForm.reset();
+            imagePreview.style.display = 'none';
+            
+            alert('رێکلام بە سەرکەوتویی نێردرا');
+        });
+
+        // Submit Settings Form
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real app, you would save settings to backend
+            alert('ڕێکخستنەکان بە سەرکەوتویی پاشەکەوت کرا');
+        });
+
+        // Modal Close Events
+        closeRequestModal.addEventListener('click', () => {
+            requestModal.style.display = 'none';
+        });
+
+        closeHouseModal.addEventListener('click', () => {
+            houseModal.style.display = 'none';
+        });
+
+        closeAdModal.addEventListener('click', () => {
+            adModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === requestModal) {
+                requestModal.style.display = 'none';
+            }
+            if (e.target === houseModal) {
+                houseModal.style.display = 'none';
+            }
+            if (e.target === adModal) {
+                adModal.style.display = 'none';
+            }
+        });
+
+        // View Request Details
+        window.viewRequest = function(requestId) {
+            const request = mockRequests.find(req => req.id === requestId);
+            
+            if (request) {
+                requestDetails.innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">زانیاری سەرەکی</h4>
+                        <p><strong>ناو:</strong> ${request.name}</p>
+                        <p><strong>مۆبایل:</strong> ${request.mobile}</p>
+                        <p><strong>جۆری داواکاری:</strong> ${request.type}</p>
+                        <p><strong>شوێن:</strong> ${request.location}</p>
+                        <p><strong>قەبارە:</strong> ${request.size}</p>
+                        <p><strong>نرخ:</strong> ${request.price}</p>
+                        <p><strong>کات:</strong> ${request.time}</p>
+                        <p><strong>دۆخ:</strong> <span class="status-badge ${request.status === 'new' ? 'status-new' : 'status-processing'}">${request.status === 'new' ? 'نوێ' : 'لە کاردایە'}</span></p>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">زانیاری زیادە</h4>
+                        ${request.details ? Object.entries(request.details).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join('') : '<p>هیچ زانیاری زیادەیەک نییە</p>'}
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn btn-accept" style="flex: 1;" onclick="acceptRequest(${request.id}); requestModal.style.display='none'">
+                            <i class="fas fa-check"></i>
+                            وەرگرتن
+                        </button>
+                        <button class="btn btn-reject" style="flex: 1;" onclick="rejectRequest(${request.id}); requestModal.style.display='none'">
+                            <i class="fas fa-times"></i>
+                            ڕەتکردنەوە
+                        </button>
+                    </div>
+                `;
+                
+                requestModal.style.display = 'flex';
+            }
+        };
+
+        // View House Details
+        window.viewHouse = function(houseId) {
+            const house = mockHouses.find(h => h.id === houseId);
+            
+            if (house) {
+                houseDetails.innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">زانیاری خانوو</h4>
+                        <p><strong>ناوی خاوەن:</strong> ${house.owner}</p>
+                        <p><strong>مۆبایل:</strong> ${house.mobile}</p>
+                        <p><strong>شوێن:</strong> ${house.location}</p>
+                        <p><strong>جۆر:</strong> ${house.type}</p>
+                        <p><strong>قەبارە:</strong> ${house.size}</p>
+                        <p><strong>نرخ:</strong> ${house.price}</p>
+                        <p><strong>دۆخی فرۆشتن:</strong> <span class="status-badge ${house.status === 'available' ? 'status-new' : 'status-completed'}">${house.status === 'available' ? 'بەردەستە' : 'فرۆشراو'}</span></p>
+                        <p><strong>زیادکراو لە:</strong> ${house.addedDate}</p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn btn-accept" style="flex: 1;" onclick="markHouseSold(${house.id}); houseModal.style.display='none'" ${house.status === 'sold' ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            <i class="fas fa-check"></i>
+                            نیشانەکردنی وەک فرۆشراو
+                        </button>
+                        <button class="btn btn-reject" style="flex: 1;" onclick="removeHouse(${house.id}); houseModal.style.display='none'">
+                            <i class="fas fa-trash"></i>
+                            سڕینەوە
+                        </button>
+                    </div>
+                `;
+                
+                houseModal.style.display = 'flex';
+            }
+        };
+
+        // View Ad Details
+        window.viewAd = function(adId) {
+            const ad = mockAds.find(a => a.id === adId);
+            
+            if (ad) {
+                adDetails.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <img src="${ad.image}" alt="${ad.title}" style="max-width: 100%; border-radius: var(--border-radius); margin-bottom: 1rem;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="color: var(--admin-primary); margin-bottom: 1rem;">${ad.title}</h4>
+                        <p>${ad.description}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p><strong>دروستکراو لە:</strong> ${ad.created}</p>
+                        <p><strong>دۆخ:</strong> <span class="status-badge ${ad.status === 'active' ? 'status-completed' : 'status-processing'}">${ad.status === 'active' ? 'چالاک' : 'ناچالاک'}</span></p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn btn-accept" style="flex: 1;" onclick="toggleAdStatus(${ad.id}); adModal.style.display='none'">
+                            <i class="fas fa-power-off"></i>
+                            ${ad.status === 'active' ? 'ناچالاککردن' : 'چالاککردن'}
+                        </button>
+                        <button class="btn btn-reject" style="flex: 1;" onclick="removeAd(${ad.id}); adModal.style.display='none'">
+                            <i class="fas fa-trash"></i>
+                            سڕینەوە
+                        </button>
+                    </div>
+                `;
+                
+                adModal.style.display = 'flex';
+            }
+        };
+
+        // Accept Request
+        window.acceptRequest = function(requestId) {
+            const requestIndex = mockRequests.findIndex(req => req.id === requestId);
+            
+            if (requestIndex !== -1) {
+                mockRequests[requestIndex].status = 'processing';
+                
+                // Add to houses if it's a house sale request
+                if (mockRequests[requestIndex].type === 'فرۆشتنی خانوو') {
+                    const request = mockRequests[requestIndex];
+                    const newHouse = {
+                        id: mockHouses.length + 1,
+                        owner: request.name,
+                        mobile: request.mobile,
+                        location: request.location,
+                        type: request.details?.saleType || 'تاپۆ',
+                        size: request.size,
+                        price: request.price,
+                        status: 'available',
+                        addedDate: new Date().toLocaleDateString('ku')
+                    };
+                    
+                    mockHouses.push(newHouse);
+                    loadHousesTable();
+                }
+                
+                // Add to lands if it's a land sale request
+                if (mockRequests[requestIndex].type === 'فرۆشتنی زەوی') {
+                    const request = mockRequests[requestIndex];
+                    const newLand = {
+                        id: mockLands.length + 1,
+                        owner: request.name,
+                        mobile: request.mobile,
+                        location: request.location,
+                        size: request.size,
+                        price: request.price,
+                        status: 'available',
+                        addedDate: new Date().toLocaleDateString('ku')
+                    };
+                    
+                    mockLands.push(newLand);
+                    loadLandsTable();
+                }
+                
+                loadRequestsTable();
+                loadDashboardData();
+                alert('داواکاری وەرگیرا و زیادکرا بۆ لیستەکە');
+            }
+        };
+
+        // Reject Request
+        window.rejectRequest = function(requestId) {
+            if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم داواکاریە ڕەت بکەیتەوە؟')) {
+                const requestIndex = mockRequests.findIndex(req => req.id === requestId);
+                
+                if (requestIndex !== -1) {
+                    mockRequests.splice(requestIndex, 1);
+                    loadRequestsTable();
+                    loadDashboardData();
+                    alert('داواکاری ڕەتکرایەوە');
+                }
+            }
+        };
+
+        // Mark House as Sold
+        window.markHouseSold = function(houseId) {
+            const houseIndex = mockHouses.findIndex(h => h.id === houseId);
+            
+            if (houseIndex !== -1) {
+                mockHouses[houseIndex].status = 'sold';
+                loadHousesTable();
+                loadDashboardData();
+                alert('خانوو نیشانەکرا وەک فرۆشراو');
+            }
+        };
+
+        // Remove House
+        window.removeHouse = function(houseId) {
+            if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم خانووە بسڕیتەوە؟')) {
+                const houseIndex = mockHouses.findIndex(h => h.id === houseId);
+                
+                if (houseIndex !== -1) {
+                    mockHouses.splice(houseIndex, 1);
+                    loadHousesTable();
+                    loadDashboardData();
+                    alert('خانوو سڕایەوە');
+                }
+            }
+        };
+
+        // Mark Land as Sold
+        window.markLandSold = function(landId) {
+            const landIndex = mockLands.findIndex(l => l.id === landId);
+            
+            if (landIndex !== -1) {
+                mockLands[landIndex].status = 'sold';
+                loadLandsTable();
+                loadDashboardData();
+                alert('زەوی نیشانەکرا وەک فرۆشراو');
+            }
+        };
+
+        // Remove Land
+        window.removeLand = function(landId) {
+            if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم زەویە بسڕیتەوە؟')) {
+                const landIndex = mockLands.findIndex(l => l.id === landId);
+                
+                if (landIndex !== -1) {
+                    mockLands.splice(landIndex, 1);
+                    loadLandsTable();
+                    loadDashboardData();
+                    alert('زەوی سڕایەوە');
+                }
+            }
+        };
+
+        // Toggle Ad Status
+        window.toggleAdStatus = function(adId) {
+            const adIndex = mockAds.findIndex(a => a.id === adId);
+            
+            if (adIndex !== -1) {
+                mockAds[adIndex].status = mockAds[adIndex].status === 'active' ? 'inactive' : 'active';
+                loadAdsTable();
+                loadDashboardData();
+                alert(`رێکلام ${mockAds[adIndex].status === 'active' ? 'چالاک' : 'ناچالاک'} کرا`);
+            }
+        };
+
+        // Remove Ad
+        window.removeAd = function(adId) {
+            if (confirm('ئایا دڵنیایت کە دەتەوێت ئەم رێکلامە بسڕیتەوە؟')) {
+                const adIndex = mockAds.findIndex(a => a.id === adId);
+                
+                if (adIndex !== -1) {
+                    mockAds.splice(adIndex, 1);
+                    loadAdsTable();
+                    loadDashboardData();
+                    alert('رێکلام سڕایەوە');
+                }
+            }
+        };
+
+        // View Land (similar to viewHouse)
+        window.viewLand = function(landId) {
+            const land = mockLands.find(l => l.id === landId);
+            
+            if (land) {
+                // Create a simple alert for land details
+                alert(`زانیاری زەوی:\n\nخاوەن: ${land.owner}\nمۆبایل: ${land.mobile}\nشوێن: ${land.location}\nقەبارە: ${land.size}\nنرخ: ${land.price}\nدۆخ: ${land.status === 'available' ? 'بەردەستە' : 'فرۆشراو'}`);
+            }
+        };
+    </script>
+</body>
+</html>
