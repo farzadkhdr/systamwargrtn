@@ -1,13 +1,8 @@
 // api/requests.js
-const requests = []; // لە کاتی ڕاستەقینەدا، لێرە دەیتابەیس بەکاربهێنە
+const requests = [];
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   const { method } = req;
-
-  // Health Check
-  if (req.url === '/api/health') {
-    return res.status(200).json({ success: true, message: 'API چالاکە' });
-  }
 
   // گەڕاندنی هەموو داواکاریەکان
   if (method === 'GET') {
@@ -54,4 +49,4 @@ export default function handler(req, res) {
   }
 
   res.status(405).json({ success: false, error: 'مێساجێکی نادروست' });
-}
+};
