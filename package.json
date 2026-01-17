@@ -1,0 +1,18 @@
+{
+  "name": "dawakrdn-api",
+  "version": "1.0.0",
+  "description": "API for Request Submission System",
+  "main": "apps.js",
+  "scripts": {
+    "start": "node apps.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "node-fetch": "^2.6.9"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
