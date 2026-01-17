@@ -1,16 +1,23 @@
 {
-  "name": "dawakrdn-api",
+  "name": "request-management-system-api",
   "version": "1.0.0",
-  "description": "API for Request Submission System",
-  "main": "apps.js",
+  "description": "سیستەمی وەرگرتنی داواکاری - API",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node apps.js"
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
+    "test": "node api/test-api.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2",
-    "node-fetch": "^2.6.9"
+    "uuid": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   },
   "engines": {
     "node": ">=14.0.0"
