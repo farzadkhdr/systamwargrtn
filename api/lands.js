@@ -12,7 +12,7 @@ let lands = [
   }
 ];
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   const { method } = req;
   const { id } = req.query;
 
@@ -67,4 +67,4 @@ export default function handler(req, res) {
   }
 
   res.status(405).json({ success: false, error: 'مێساجێکی نادروست' });
-}
+};
